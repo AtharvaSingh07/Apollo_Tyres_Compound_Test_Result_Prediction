@@ -331,7 +331,7 @@ def extract_key_properties(predictions):
         "elongation": 0,
         "hardness": 0,
         "abrasionResistance": 0,
-        "tearStrength": 0,
+        "teaftrength": 0,
         "modulus100": {},
         "modulus200": {},
         "modulus300": {},
@@ -415,16 +415,17 @@ def generate_property_ranges():
     }
 
 def get_confidence_score(predictions):
-    """Calculate a confidence score based on the model's typical performance"""
-    # This would ideally be based on model metrics, but for now we'll use a simple heuristic
+    """
+    Estimate confidence score based on the proportion of valid (non-null, non-'NA') predictions.
+    """
     non_null_predictions = sum(1 for p in predictions.values() if p is not None and p != "NA")
-    total_predictions = max(1, len(predictions))
-    
-    # Base confidence on prediction coverage
-    base_confidence = (non_null_predictions / total_predictions) * 100
-    
-    # Cap at 95% to acknowledge inherent uncertainty
-    return min(base_confidence, 95)
+    total_predictions = max(1, len(predictions))  # Avoid division by zero
+
+    # Confidence score is simply the proportion of valid predictions
+    confidence = (non_null_predictions / total_predictions) * 100
+
+    return round(confidence, 2)
+
 
 def get_material_impacts(new_formulation):
     """Calculate estimated impact of each material on properties"""
