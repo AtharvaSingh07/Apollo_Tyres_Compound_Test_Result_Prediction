@@ -5,3 +5,6 @@ pandas
 numpy
 joblib
 scikit-learn
+openpyxl
+matplotlib
+seaborn
