@@ -27,13 +27,6 @@ const PredictionResultDisplay = ({
   const hardness = predictionResults.hardness || "N/A";
   const abrasionResistance = predictionResults.abrasionResistance || "N/A";
   const tearStrength = predictionResults.tearStrength || "N/A";
-  const density = predictionResults.density || "N/A";
-  const modulus50 = predictionResults.modulus50 || "N/A";
-
-  // Get modulus values
-  const modulus100 = predictionResults.modulus100 || {};
-  const modulus200 = predictionResults.modulus200 || {};
-  const modulus300 = predictionResults.modulus300 || {};
 
   // Function to render a property card
   const renderPropertyCard = (title, value, unit = "") => (

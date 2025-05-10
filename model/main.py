@@ -49,7 +49,6 @@ class PredictionResponse(BaseModel):
     hardness: float
     abrasionResistance: float
     tearStrength: float
-    density: float
     modulus100: Dict[str, Union[float, str]]
     modulus200: Dict[str, Union[float, str]]
     modulus300: Dict[str, Union[float, str]]
@@ -197,58 +196,58 @@ def predict_new_formulation(new_formulation):
             predictions[test_param] = None
     
     # Add the specified test parameters if they're not in predictions
-    default_parameters = {
-    "100 Modulus MPa Unaged Condition 160⁰C 15 minutes": "NA",
-    "100 Modulus MPa Unaged Condition 160⁰C 30 minutes": "NA",
-    "100 Modulus MPa Aged 100⁰C 48Hrs": "NA",
-    "100 Modulus MPa Aged 70⁰C 7Days": "NA",
-    "200 Modulus MPa Unaged Condition 160⁰C 15 minutes": "NA",
-    "200 Modulus MPa Unaged Condition 160⁰C 30 minutes": "NA",
-    "200 Modulus MPa Aged 100⁰C 48Hrs": "NA",
-    "200 Modulus MPa Aged 70⁰C 7Days": "NA",
-    "300 Modulus MPa Unaged Condition 160⁰C 15 minutes": "NA",
-    "300 Modulus MPa Unaged Condition 160⁰C 30 minutes": "NA",
-    "300 Modulus MPa Aged 100⁰C 48Hrs": "NA",
-    "300 Modulus MPa Aged 70⁰C 7Days": "NA",
-    "50 Modulus MPa Unaged Condition 160⁰C 15 minutes": "NA",
-    "Abrasion Loss Index": "NA",
-    "Abrasion Loss mg m at100 N load 8 km h speed 9⁰ slip angle": "NA",
-    "Abrasion Loss mg m at100 N load 8 km h speed 5 5⁰ slip angle": "NA",
-    "Bulk tear strength N unaged Condition 160⁰C 15 minutes": "NA",
-    "Bulk tear strength N unaged Condition 160⁰C 30 minutes": "NA",
-    "Elongation at break Unaged Condition 160⁰C 15 minutes": "NA",
-    "Elongation at break Unaged Condition 160⁰C 30 minutes": "NA",
-    "Elongation at break Aged 70⁰C 7Days": "NA",
-    "Elongation at break Aged 100⁰C 48Hrs": "NA",
-    "E MPa 70C": "NA",
-    "Hardness Shore A Unaged Condition 160⁰C 15 minutes": "NA",
-    "Hardness Shore A Unaged Condition 160⁰C 30 minutes": "NA",
-    "Hardness Shore A Aged 100⁰C 48Hrs": "NA",
-    "Hardness Shore A Aged 70⁰C 7Days": "NA",
-    "HBU DT at Base 0C": "NA",
-    "HBU DT at centre 0C": "NA",
-    "Loss Complience MPa 1 70C": "NA",
-    "SET": "NA",
-    "Slope 9 deg slip to 16 deg slip": "NA",
-    "Tan delta 70C": "NA",
-    "Tear strength N mm Aged 100⁰C 48Hrs": "NA",
-    "Tear strength N mm Aged 70⁰C 7Days": "NA",
-    "Tear strength N mm Unaged Condition 160⁰C 15 minutes": "NA",
-    "Tear strength N mm Unaged Condition 160⁰C 30 minutes": "NA",
-    "Tensile strength MPa Unaged Condition 160⁰C 15 minutes": "NA",
-    "Tensile strength MPa Unaged Condition 160⁰C 30 minutes": "NA",
-    "Tensile strength MPa Aged 100⁰C 48Hrs": "NA",
-    "Tensile strength MPa Aged 70⁰C 7Days": "NA",
-    "Toughness Unaged Condition 160⁰C 15 minutes": "NA",
-    "Toughness Unaged Condition 160⁰C 30 minutes": "NA",
-    "Toughness Aged 100⁰C 48Hrs": "NA"
-}
+#     default_parameters = {
+#     "100 Modulus MPa Unaged Condition 160⁰C 15 minutes": "NA",
+#     "100 Modulus MPa Unaged Condition 160⁰C 30 minutes": "NA",
+#     "100 Modulus MPa Aged 100⁰C 48Hrs": "NA",
+#     "100 Modulus MPa Aged 70⁰C 7Days": "NA",
+#     "200 Modulus MPa Unaged Condition 160⁰C 15 minutes": "NA",
+#     "200 Modulus MPa Unaged Condition 160⁰C 30 minutes": "NA",
+#     "200 Modulus MPa Aged 100⁰C 48Hrs": "NA",
+#     "200 Modulus MPa Aged 70⁰C 7Days": "NA",
+#     "300 Modulus MPa Unaged Condition 160⁰C 15 minutes": "NA",
+#     "300 Modulus MPa Unaged Condition 160⁰C 30 minutes": "NA",
+#     "300 Modulus MPa Aged 100⁰C 48Hrs": "NA",
+#     "300 Modulus MPa Aged 70⁰C 7Days": "NA",
+#     "50 Modulus MPa Unaged Condition 160⁰C 15 minutes": "NA",
+#     "Abrasion Loss Index": "NA",
+#     "Abrasion Loss mg m at100 N load 8 km h speed 9⁰ slip angle": "NA",
+#     "Abrasion Loss mg m at100 N load 8 km h speed 5 5⁰ slip angle": "NA",
+#     "Bulk tear strength N unaged Condition 160⁰C 15 minutes": "NA",
+#     "Bulk tear strength N unaged Condition 160⁰C 30 minutes": "NA",
+#     "Elongation at break Unaged Condition 160⁰C 15 minutes": "NA",
+#     "Elongation at break Unaged Condition 160⁰C 30 minutes": "NA",
+#     "Elongation at break Aged 70⁰C 7Days": "NA",
+#     "Elongation at break Aged 100⁰C 48Hrs": "NA",
+#     "E MPa 70C": "NA",
+#     "Hardness Shore A Unaged Condition 160⁰C 15 minutes": "NA",
+#     "Hardness Shore A Unaged Condition 160⁰C 30 minutes": "NA",
+#     "Hardness Shore A Aged 100⁰C 48Hrs": "NA",
+#     "Hardness Shore A Aged 70⁰C 7Days": "NA",
+#     "HBU DT at Base 0C": "NA",
+#     "HBU DT at centre 0C": "NA",
+#     "Loss Complience MPa 1 70C": "NA",
+#     "SET": "NA",
+#     "Slope 9 deg slip to 16 deg slip": "NA",
+#     "Tan delta 70C": "NA",
+#     "Tear strength N mm Aged 100⁰C 48Hrs": "NA",
+#     "Tear strength N mm Aged 70⁰C 7Days": "NA",
+#     "Tear strength N mm Unaged Condition 160⁰C 15 minutes": "NA",
+#     "Tear strength N mm Unaged Condition 160⁰C 30 minutes": "NA",
+#     "Tensile strength MPa Unaged Condition 160⁰C 15 minutes": "NA",
+#     "Tensile strength MPa Unaged Condition 160⁰C 30 minutes": "NA",
+#     "Tensile strength MPa Aged 100⁰C 48Hrs": "NA",
+#     "Tensile strength MPa Aged 70⁰C 7Days": "NA",
+#     "Toughness Unaged Condition 160⁰C 15 minutes": "NA",
+#     "Toughness Unaged Condition 160⁰C 30 minutes": "NA",
+#     "Toughness Aged 100⁰C 48Hrs": "NA"
+# }
 
     
-    # Add default values for parameters not predicted by models
-    for param, value in default_parameters.items():
-        if param not in predictions or predictions[param] is None:
-            predictions[param] = value
+#     # Add default values for parameters not predicted by models
+#     for param, value in default_parameters.items():
+#         if param not in predictions or predictions[param] is None:
+#             predictions[param] = value
     
     return predictions
 
@@ -410,7 +409,6 @@ def generate_property_ranges():
         "hardness": {"low": 40, "medium": 60, "high": 80},
         "abrasionResistance": {"low": 0.2, "medium": 0.5, "high": 0.8},
         "tearStrength": {"low": 40, "medium": 70, "high": 100},
-        "density": {"low": 0.9, "medium": 1.1, "high": 1.3},
         "modulus100": {"low": 1.0, "medium": 2.0, "high": 3.5},
         "modulus200": {"low": 2.5, "medium": 5.0, "high": 8.5},
         "modulus300": {"low": 5.0, "medium": 10.0, "high": 15.0}
@@ -542,7 +540,6 @@ async def predict(request: PredictionRequest):
             "hardness": key_props["hardness"],
             "abrasionResistance": key_props["abrasionResistance"],
             "tearStrength": key_props["tearStrength"],
-            "density": key_props["density"],
             "modulus100": key_props["modulus100"],
             "modulus200": key_props["modulus200"],
             "modulus300": key_props["modulus300"],

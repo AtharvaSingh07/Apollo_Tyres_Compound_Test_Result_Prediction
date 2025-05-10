@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
 import { AnimatePresence } from "framer-motion";
+import SplashScreen from "./SplashScreen";
 import InitialSelectionScreen from "./InitialSelectionScreen";
 import MaterialSelectionScreen from "./MaterialSelectionScreen";
 import RecipeSelectionScreen from "./RecipeSelectionScreen";
@@ -27,7 +28,7 @@ const buttonVariants = {
 
 function App() {
   // App state
-  const [currentPage, setCurrentPage] = useState("initial-selection");
+  const [currentPage, setCurrentPage] = useState("splash");
   const [numberOfMaterials, setNumberOfMaterials] = useState(0);
   const [materialSelections, setMaterialSelections] = useState([]);
   const [customMaterialCount, setCustomMaterialCount] = useState("");
@@ -38,6 +39,11 @@ function App() {
   const [selectedRecipe, setSelectedRecipe] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  // Handler for splash screen
+  const handleStartApp = () => {
+    setCurrentPage("initial-selection");
+  };
 
   // Handler for initial selection screen
   const handleInitialSelection = (option) => {
@@ -125,8 +131,20 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-purple-700 to-indigo-800 flex justify-center items-center p-4">
-      <div className="absolute inset-0 bg-pattern opacity-10"></div>
+    <div className="min-h-screen flex justify-center items-center p-4 relative">
+      {/* Background image */}
+      <div
+        className="absolute inset-0 z-0"
+        style={{
+          backgroundImage: 'url("/background.jpg")',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      ></div>
+
+      {/* Semi-transparent overlay for better readability */}
+      <div className="absolute inset-0 bg-black/30 z-10"></div>
 
       {isLoading && (
         <div className="absolute inset-0 bg-black/50 flex justify-center items-center z-50">
@@ -149,62 +167,69 @@ function App() {
         </div>
       )}
 
-      <AnimatePresence mode="wait">
-        {currentPage === "initial-selection" && (
-          <InitialSelectionScreen onSelectOption={handleInitialSelection} />
-        )}
+      {/* Main content - placed above the overlay */}
+      <div className="relative z-20 w-full justify-center items-center flex flex-col">
+        <AnimatePresence mode="wait">
+          {currentPage === "splash" && (
+            <SplashScreen onStart={handleStartApp} />
+          )}
 
-        {currentPage === "recipe-selection" && (
-          <RecipeSelectionScreen
-            onSelectRecipe={handleRecipeSelection}
-            onBack={() => setCurrentPage("initial-selection")}
-          />
-        )}
+          {currentPage === "initial-selection" && (
+            <InitialSelectionScreen onSelectOption={handleInitialSelection} />
+          )}
 
-        {currentPage === "material-selection" && (
-          <MaterialSelectionScreen
-            numberOfMaterials={numberOfMaterials}
-            setNumberOfMaterials={setNumberOfMaterials}
-            materialSelections={materialSelections}
-            setMaterialSelections={setMaterialSelections}
-            customMaterialCount={customMaterialCount}
-            setCustomMaterialCount={setCustomMaterialCount}
-            onProceed={handleMaterialSelectionComplete}
-            onBack={() => setCurrentPage("initial-selection")}
-          />
-        )}
+          {currentPage === "recipe-selection" && (
+            <RecipeSelectionScreen
+              onSelectRecipe={handleRecipeSelection}
+              onBack={() => setCurrentPage("initial-selection")}
+            />
+          )}
 
-        {currentPage === "material-composition" && (
-          <CompositionScreen
-            materialCompositions={materialCompositions}
-            handleMaterialCompositionChange={handleMaterialCompositionChange}
-            onBack={() =>
-              setCurrentPage(
-                isModifyingRecipe ? "recipe-selection" : "material-selection"
-              )
-            }
-            onPredict={handlePredict}
-            isModifyingRecipe={isModifyingRecipe}
-            currentRecipeName={selectedRecipe}
-          />
-        )}
+          {currentPage === "material-selection" && (
+            <MaterialSelectionScreen
+              numberOfMaterials={numberOfMaterials}
+              setNumberOfMaterials={setNumberOfMaterials}
+              materialSelections={materialSelections}
+              setMaterialSelections={setMaterialSelections}
+              customMaterialCount={customMaterialCount}
+              setCustomMaterialCount={setCustomMaterialCount}
+              onProceed={handleMaterialSelectionComplete}
+              onBack={() => setCurrentPage("initial-selection")}
+            />
+          )}
 
-        {currentPage === "prediction-results" && predictionResults && (
-          <PredictionResultDisplay
-            buttonVariants={buttonVariants}
-            containerVariants={containerVariants}
-            itemVariants={itemVariants}
-            predictionResults={predictionResults}
-            materialCompositions={materialCompositions}
-            toggleGraph={() => setShowGraph(!showGraph)}
-            showGraph={showGraph}
-            startNewPrediction={handleStartNewPrediction}
-            setCurrentPage={setCurrentPage}
-          />
-        )}
-      </AnimatePresence>
+          {currentPage === "material-composition" && (
+            <CompositionScreen
+              materialCompositions={materialCompositions}
+              handleMaterialCompositionChange={handleMaterialCompositionChange}
+              onBack={() =>
+                setCurrentPage(
+                  isModifyingRecipe ? "recipe-selection" : "material-selection"
+                )
+              }
+              onPredict={handlePredict}
+              isModifyingRecipe={isModifyingRecipe}
+              currentRecipeName={selectedRecipe}
+            />
+          )}
 
-      <div className="absolute bottom-4 text-white/70 text-sm">
+          {currentPage === "prediction-results" && predictionResults && (
+            <PredictionResultDisplay
+              buttonVariants={buttonVariants}
+              containerVariants={containerVariants}
+              itemVariants={itemVariants}
+              predictionResults={predictionResults}
+              materialCompositions={materialCompositions}
+              toggleGraph={() => setShowGraph(!showGraph)}
+              showGraph={showGraph}
+              startNewPrediction={handleStartNewPrediction}
+              setCurrentPage={setCurrentPage}
+            />
+          )}
+        </AnimatePresence>
+      </div>
+
+      <div className="absolute bottom-4 text-white/90 text-sm z-20">
         Compound Prediction Tool © 2025
       </div>
     </div>
