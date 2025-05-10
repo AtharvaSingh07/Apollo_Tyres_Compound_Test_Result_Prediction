@@ -21,12 +21,19 @@ const PredictionResultDisplay = ({
     saveReport(predictionResults, materialCompositions);
   };
 
-  // Get main test values for the summary cards
-  const tensileStrength = predictionResults.tensileStrength || "N/A";
-  const elongation = predictionResults.elongation || "N/A";
-  const hardness = predictionResults.hardness || "N/A";
-  const abrasionResistance = predictionResults.abrasionResistance || "N/A";
-  const tearStrength = predictionResults.tearStrength || "N/A";
+  // Format number to 2 decimal places
+  const formatValue = (value) => {
+    if (value === undefined || value === null) return "N/A";
+    // Check if value is a number before formatting
+    return isNaN(parseFloat(value)) ? value : parseFloat(value).toFixed(2);
+  };
+
+  // Get main test values for the summary cards with 2 decimal point formatting
+  const tensileStrength = formatValue(predictionResults.tensileStrength);
+  const elongation = formatValue(predictionResults.elongation);
+  const hardness = formatValue(predictionResults.hardness);
+  const abrasionResistance = formatValue(predictionResults.abrasionResistance);
+  const tearStrength = formatValue(predictionResults.tearStrength);
 
   // Function to render a property card
   const renderPropertyCard = (title, value, unit = "") => (
@@ -64,7 +71,7 @@ const PredictionResultDisplay = ({
                   className={index % 2 === 0 ? "bg-purple-50" : ""}
                 >
                   <td className="px-4 py-2">{param}</td>
-                  <td className="px-4 py-2 text-right">{value}</td>
+                  <td className="px-4 py-2 text-right">{formatValue(value)}</td>
                 </tr>
               )
             )}
@@ -101,7 +108,9 @@ const PredictionResultDisplay = ({
                   className={index % 2 === 0 ? "bg-purple-50" : ""}
                 >
                   <td className="px-4 py-2">{material}</td>
-                  <td className="px-4 py-2 text-right">{impact}</td>
+                  <td className="px-4 py-2 text-right">
+                    {formatValue(impact)}
+                  </td>
                 </tr>
               ))}
           </tbody>
@@ -128,7 +137,7 @@ const PredictionResultDisplay = ({
 
       <motion.div variants={itemVariants} className="mb-6">
         <div className="flex mb-4 border-b">
-          <button
+          {/* <button
             className={`px-4 py-2 ${
               activeTab === "summary"
                 ? "border-b-2 border-purple-600 text-purple-600"
@@ -137,7 +146,7 @@ const PredictionResultDisplay = ({
             onClick={() => setActiveTab("summary")}
           >
             Summary
-          </button>
+          </button> */}
 
           <button
             className={`px-4 py-2 ${
@@ -161,7 +170,7 @@ const PredictionResultDisplay = ({
           </button>
         </div>
 
-        {activeTab === "summary" && (
+        {/* {activeTab === "summary" && (
           <>
             <div className="grid grid-cols-2 gap-4 mb-6 md:grid-cols-3">
               {renderPropertyCard("Tensile Strength", tensileStrength, "MPa")}
@@ -183,11 +192,15 @@ const PredictionResultDisplay = ({
                 <div className="flex-1 bg-gray-200 rounded-full h-4 mr-2">
                   <div
                     className="bg-green-500 h-4 rounded-full"
-                    style={{ width: `${predictionResults.confidenceScore}%` }}
+                    style={{
+                      width: `${formatValue(
+                        predictionResults.confidenceScore
+                      )}%`,
+                    }}
                   ></div>
                 </div>
                 <span className="font-bold">
-                  {predictionResults.confidenceScore}%
+                  {formatValue(predictionResults.confidenceScore)}%
                 </span>
               </div>
             </div>
@@ -208,7 +221,7 @@ const PredictionResultDisplay = ({
               </ul>
             </div>
           </>
-        )}
+        )} */}
 
         {activeTab === "detailed" && renderDetailedResults()}
 

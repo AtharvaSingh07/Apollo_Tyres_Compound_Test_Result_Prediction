@@ -11,15 +11,15 @@ export const generateMockResults = (materialCompositions) => {
 
   // Generate random values for properties
   return {
-    tensileStrength: (Math.random() * 20 + 10).toFixed(2),
-    elongation: (Math.random() * 500 + 300).toFixed(2),
-    hardness: Math.floor(Math.random() * 30 + 50),
-    abrasionResistance: (Math.random() * 150 + 50).toFixed(2),
-    tearStrength: (Math.random() * 40 + 20).toFixed(2),
-    density: (Math.random() * 0.5 + 1.0).toFixed(3),
-    cureTime: (Math.random() * 10 + 5).toFixed(1),
-    totalWeight: totalWeight.toFixed(2),
-    confidenceScore: (Math.random() * 20 + 80).toFixed(1), // 80-100% confidence
+    // tensileStrength: (Math.random() * 20 + 10).toFixed(2),
+    // elongation: (Math.random() * 500 + 300).toFixed(2),
+    // hardness: Math.floor(Math.random() * 30 + 50),
+    // abrasionResistance: (Math.random() * 150 + 50).toFixed(2),
+    // tearStrength: (Math.random() * 40 + 20).toFixed(2),
+    // density: (Math.random() * 0.5 + 1.0).toFixed(3),
+    // cureTime: (Math.random() * 10 + 5).toFixed(1),
+    // totalWeight: totalWeight.toFixed(2),
+    // confidenceScore: (Math.random() * 20 + 80).toFixed(1), // 80-100% confidence
     // Add recommended uses
     recommendedUses: [
       "Automotive Parts",

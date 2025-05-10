@@ -40,8 +40,16 @@ class MaterialComposition(BaseModel):
 class PredictionRequest(BaseModel):
     materialCompositions: List[MaterialComposition]
 
+class OrderedTestResult(BaseModel):
+    unagedCondition15min: Dict[str, Union[float, str]]
+    unagedCondition30min: Dict[str, Union[float, str]]
+    agedCondition100C48Hrs: Dict[str, Union[float, str]]
+    agedCondition70C7Days: Dict[str, Union[float, str]]
+    otherProperties: Dict[str, Union[float, str]]
+
 class PredictionResponse(BaseModel):
-    testResults: Dict[str, Union[float, str]]
+    orderedTestResults: OrderedTestResult
+    rawTestResults: Dict[str, Union[float, str]]
     confidenceScore: float
     recommendedUses: List[str]
     tensileStrength: float
@@ -193,61 +201,7 @@ def predict_new_formulation(new_formulation):
             predictions[test_param] = float(pred)  # Convert numpy types to Python float
         except Exception as e:
             print(f"Error predicting {test_param}: {str(e)}")
-            predictions[test_param] = None
-    
-    # Add the specified test parameters if they're not in predictions
-#     default_parameters = {
-#     "100 Modulus MPa Unaged Condition 160⁰C 15 minutes": "NA",
-#     "100 Modulus MPa Unaged Condition 160⁰C 30 minutes": "NA",
-#     "100 Modulus MPa Aged 100⁰C 48Hrs": "NA",
-#     "100 Modulus MPa Aged 70⁰C 7Days": "NA",
-#     "200 Modulus MPa Unaged Condition 160⁰C 15 minutes": "NA",
-#     "200 Modulus MPa Unaged Condition 160⁰C 30 minutes": "NA",
-#     "200 Modulus MPa Aged 100⁰C 48Hrs": "NA",
-#     "200 Modulus MPa Aged 70⁰C 7Days": "NA",
-#     "300 Modulus MPa Unaged Condition 160⁰C 15 minutes": "NA",
-#     "300 Modulus MPa Unaged Condition 160⁰C 30 minutes": "NA",
-#     "300 Modulus MPa Aged 100⁰C 48Hrs": "NA",
-#     "300 Modulus MPa Aged 70⁰C 7Days": "NA",
-#     "50 Modulus MPa Unaged Condition 160⁰C 15 minutes": "NA",
-#     "Abrasion Loss Index": "NA",
-#     "Abrasion Loss mg m at100 N load 8 km h speed 9⁰ slip angle": "NA",
-#     "Abrasion Loss mg m at100 N load 8 km h speed 5 5⁰ slip angle": "NA",
-#     "Bulk tear strength N unaged Condition 160⁰C 15 minutes": "NA",
-#     "Bulk tear strength N unaged Condition 160⁰C 30 minutes": "NA",
-#     "Elongation at break Unaged Condition 160⁰C 15 minutes": "NA",
-#     "Elongation at break Unaged Condition 160⁰C 30 minutes": "NA",
-#     "Elongation at break Aged 70⁰C 7Days": "NA",
-#     "Elongation at break Aged 100⁰C 48Hrs": "NA",
-#     "E MPa 70C": "NA",
-#     "Hardness Shore A Unaged Condition 160⁰C 15 minutes": "NA",
-#     "Hardness Shore A Unaged Condition 160⁰C 30 minutes": "NA",
-#     "Hardness Shore A Aged 100⁰C 48Hrs": "NA",
-#     "Hardness Shore A Aged 70⁰C 7Days": "NA",
-#     "HBU DT at Base 0C": "NA",
-#     "HBU DT at centre 0C": "NA",
-#     "Loss Complience MPa 1 70C": "NA",
-#     "SET": "NA",
-#     "Slope 9 deg slip to 16 deg slip": "NA",
-#     "Tan delta 70C": "NA",
-#     "Tear strength N mm Aged 100⁰C 48Hrs": "NA",
-#     "Tear strength N mm Aged 70⁰C 7Days": "NA",
-#     "Tear strength N mm Unaged Condition 160⁰C 15 minutes": "NA",
-#     "Tear strength N mm Unaged Condition 160⁰C 30 minutes": "NA",
-#     "Tensile strength MPa Unaged Condition 160⁰C 15 minutes": "NA",
-#     "Tensile strength MPa Unaged Condition 160⁰C 30 minutes": "NA",
-#     "Tensile strength MPa Aged 100⁰C 48Hrs": "NA",
-#     "Tensile strength MPa Aged 70⁰C 7Days": "NA",
-#     "Toughness Unaged Condition 160⁰C 15 minutes": "NA",
-#     "Toughness Unaged Condition 160⁰C 30 minutes": "NA",
-#     "Toughness Aged 100⁰C 48Hrs": "NA"
-# }
-
-    
-#     # Add default values for parameters not predicted by models
-#     for param, value in default_parameters.items():
-#         if param not in predictions or predictions[param] is None:
-#             predictions[param] = value
+            predictions[test_param] = "NA"
     
     return predictions
 
@@ -323,6 +277,78 @@ def get_recommended_uses(predictions):
     
     return uses
 
+def reorder_predictions(predictions):
+    """
+    Reorder the predictions according to the specified format
+    """
+    def safe_get(key):
+        return predictions.get(key, "NA")
+    
+    # Create the ordered structure
+    ordered = {
+        "unagedCondition15min": {
+            "1_hardness": safe_get("Hardness Shore A Unaged Condition 160⁰C 15 minutes"),
+            "2_modulus50": safe_get("50 Modulus MPa Unaged Condition 160⁰C 15 minutes"),
+            "3_modulus100": safe_get("100 Modulus MPa Unaged Condition 160⁰C 15 minutes"),
+            "4_modulus200": safe_get("200 Modulus MPa Unaged Condition 160⁰C 15 minutes"),
+            "5_modulus300": safe_get("300 Modulus MPa Unaged Condition 160⁰C 15 minutes"),
+            "6_tensileStrength": safe_get("Tensile strength MPa Unaged Condition 160⁰C 15 minutes"),
+            "7_elongation": safe_get("Elongation at break Unaged Condition 160⁰C 15 minutes"),
+            "8_toughness": safe_get("Toughness Unaged Condition 160⁰C 15 minutes"),
+            "9_tearStrength": safe_get("Tear strength N mm Unaged Condition 160⁰C 15 minutes"),
+            "10_bulkTearStrength": safe_get("Bulk tear strength N unaged Condition 160⁰C 15 minutes")
+        },
+        "unagedCondition30min": {
+            "11_hardness": safe_get("Hardness Shore A Unaged Condition 160⁰C 30 minutes"),
+            "12_modulus100": safe_get("100 Modulus MPa Unaged Condition 160⁰C 30 minutes"),
+            "13_modulus200": safe_get("200 Modulus MPa Unaged Condition 160⁰C 30 minutes"),
+            "14_modulus300": safe_get("300 Modulus MPa Unaged Condition 160⁰C 30 minutes"),
+            "15_tensileStrength": safe_get("Tensile strength MPa Unaged Condition 160⁰C 30 minutes"),
+            "16_elongation": safe_get("Elongation at break Unaged Condition 160⁰C 30 minutes"),
+            "17_toughness": safe_get("Toughness Unaged Condition 160⁰C 30 minutes"),
+            "18_tearStrength": safe_get("Tear strength N mm Unaged Condition 160⁰C 30 minutes"),
+            "19_bulkTearStrength": safe_get("Bulk tear strength N unaged Condition 160⁰C 30 minutes")
+        },
+        "agedCondition100C48Hrs": {
+            "20_hardness": safe_get("Hardness Shore A Aged 100⁰C 48Hrs"),
+            "21_modulus100": safe_get("100 Modulus MPa Aged 100⁰C 48Hrs"),
+            "22_modulus200": safe_get("200 Modulus MPa Aged 100⁰C 48Hrs"),
+            "23_modulus300": safe_get("300 Modulus MPa Aged 100⁰C 48Hrs"),
+            "24_tensileStrength": safe_get("Tensile strength MPa Aged 100⁰C 48Hrs"),
+            "25_elongation": safe_get("Elongation at break Aged 100⁰C 48Hrs"),
+            "26_toughness": safe_get("Toughness Aged 100⁰C 48Hrs"),
+            "27_tearStrength": safe_get("Tear strength N mm Aged 100⁰C 48Hrs"),
+            "28_bulkTearStrength": safe_get("Bulk tear strength N Aged 100⁰C 48Hrs")
+        },
+        "agedCondition70C7Days": {
+            "29_hardness": safe_get("Hardness Shore A Aged 70⁰C 7Days"),
+            "30_modulus100": safe_get("100 Modulus MPa Aged 70⁰C 7Days"),
+            "31_modulus200": safe_get("200 Modulus MPa Aged 70⁰C 7Days"),
+            "32_modulus300": safe_get("300 Modulus MPa Aged 70⁰C 7Days"),
+            "33_tensileStrength": safe_get("Tensile strength MPa Aged 70⁰C 7Days"),
+            "34_elongation": safe_get("Elongation at break Aged 70⁰C 7Days"),
+            "35_toughness": safe_get("Toughness Aged 70⁰C 7Days"),
+            "36_tearStrength": safe_get("Tear strength N mm Aged 70⁰C 7Days"),
+            "37_bulkTearStrength": safe_get("Bulk tear strength N Aged 70⁰C 7Days")
+        },
+        "otherProperties": {
+            "38_dinAbrasionLoss": safe_get("DIN Abrasion Loss mm³"),
+            "39_hbuDtBase": safe_get("HBU DT at Base 0C"),
+            "40_hbuDtCentre": safe_get("HBU DT at centre 0C"),
+            "41_set": safe_get("SET"),
+            "42_abrasionLossIndex": safe_get("Abrasion Loss Index"),
+            "43_slope9degTo16deg": safe_get("Slope 9 deg slip to 16 deg slip"),
+            "44_abrasionLoss9deg": safe_get("Abrasion Loss mg m at100 N load 8 km h speed 9⁰ slip angle"),
+            "45_abrasionLoss5_5deg": safe_get("Abrasion Loss mg m at100 N load 8 km h speed 5 5⁰ slip angle"),
+            "46_eMpa70C": safe_get("E MPa 70C"),
+            "47_e2Mpa70C": safe_get("E2 MPa 70C"),
+            "48_tanDelta70C": safe_get("Tan delta 70C"),
+            "49_lossCompliance70C": safe_get("Loss Complience MPa 1 70C")
+        }
+    }
+    
+    return ordered
+
 def extract_key_properties(predictions):
     """Extract key properties from the full prediction set"""
     # Initialize with default values
@@ -331,7 +357,7 @@ def extract_key_properties(predictions):
         "elongation": 0,
         "hardness": 0,
         "abrasionResistance": 0,
-        "teaftrength": 0,
+        "tearStrength": 0,
         "modulus100": {},
         "modulus200": {},
         "modulus300": {},
@@ -426,7 +452,6 @@ def get_confidence_score(predictions):
 
     return round(confidence, 2)
 
-
 def get_material_impacts(new_formulation):
     """Calculate estimated impact of each material on properties"""
     # This would ideally be based on model feature importances
@@ -519,6 +544,9 @@ async def predict(request: PredictionRequest):
         # Make predictions
         predictions = predict_new_formulation(new_formulation)
         
+        # Reorder predictions according to specified format
+        ordered_predictions = reorder_predictions(predictions)
+        
         # Extract key properties
         key_props = extract_key_properties(predictions)
         
@@ -533,7 +561,8 @@ async def predict(request: PredictionRequest):
         
         # Return the response
         return {
-            "testResults": predictions,
+            "orderedTestResults": ordered_predictions,
+            "rawTestResults": predictions,
             "confidenceScore": confidence,
             "recommendedUses": uses,
             "tensileStrength": key_props["tensileStrength"],
