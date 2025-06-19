@@ -1,6 +1,6 @@
 // src/api/apiClient.js
 const API_BASE_URL =
-  process.env.REACT_APP_API_BASE_URL || "https://apollo-8pu2.onrender.com";
+  process.env.REACT_APP_API_BASE_URL || "http://localhost:8000";
 
 /**
  * Fetch all available raw materials

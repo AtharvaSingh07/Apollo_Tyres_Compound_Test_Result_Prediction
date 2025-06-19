@@ -14,7 +14,7 @@ const PredictionResultDisplay = ({
   startNewPrediction,
   setCurrentPage,
 }) => {
-  const [activeTab, setActiveTab] = useState("summary");
+  const [activeTab, setActiveTab] = useState("detailed");
 
   // Handler for saving the report
   const handleSaveReport = () => {

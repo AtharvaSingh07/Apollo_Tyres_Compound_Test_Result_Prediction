@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.linear_model import LinearRegression
+from sklearn.compose import TransformedTargetRegressor
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import matplotlib.pyplot as plt
 import seaborn as sns
@@ -115,6 +116,11 @@ def build_train_model(X, y, test_parameter):
     for name, model in models.items():
         try:
             # Train
+            model = TransformedTargetRegressor(
+                regressor=GradientBoostingRegressor(),
+                func=np.log1p,            # log1p handles zero
+                inverse_func=np.expm1     # undo log1p
+            )
             model.fit(X_train, y_train)
             
             # Predict
@@ -292,8 +298,9 @@ def predict_new_formulation(models, new_formulation, formulation_matrix):
                 new_form_df_ordered = new_form_df
             
             # Predict
-            pred = model.predict(new_form_df_ordered)[0]
-            predictions[test_param] = pred
+            pred = max(0, model.predict(new_form_df_ordered)[0])
+
+            predictions[test_param] = max(0, pred)
         except Exception as e:
             predictions[test_param] = f"Error: {str(e)}"
     
